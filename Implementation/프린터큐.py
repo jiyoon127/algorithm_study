@@ -6,7 +6,7 @@ t = int(input())
 for _ in range(t):
   l, i = map(int, input().split())
   prints = deque(list(map(int, input().split())))
-  count = 0
+  count = 0 
   while prints:
     top = max(prints)
     i -= 1
