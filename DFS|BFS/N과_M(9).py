@@ -12,11 +12,11 @@ def dfs(length):
     print(*data)
     return
   for i in visited.keys():
-      if visited[i] == 0: continue
-      visited[i] -= 1
-      data.append(i)
-      dfs(length + 1)
-      data.pop()
-      visited[i] +=  1
+    if visited[i] == 0: continue
+    visited[i] -= 1
+    data.append(i)
+    dfs(length + 1)
+    data.pop()
+    visited[i] +=  1
 
 dfs(0)
