@@ -4,54 +4,52 @@
 import sys
 input = sys.stdin.readline
 n, k = int(input()), int(input())
-graph = [[0] * (n+1) for _ in range(n+1)]
-info = []
+graph = [[0] * n for _ in range(n)]
+moves = []
+
+dx = [0, 1, 0 ,-1]
+dy = [1, 0, -1, 0]
 
 for _ in range(k):
-  a, b = map(int, input().split())
-  graph[a][b] = 1
+  r, c = map(int, input().split())
+  graph[r-1][c-1] = 1 # apple
 
 l = int(input())
 for _ in range(l):
   x, c = input().split()
-  info.append((int(x), c))
+  moves.append((int(x), c))
 
-dx = [0, 1, 0, -1]
-dy = [1, 0, -1, 0]
-
-def turn(direct, c):
-  if c == "L":
-    direct = (direct - 1) % 4
-  else:
-    direct = (direct + 1) % 4
-  return direct
+def turn(idx, direct):
+  if direct == "L":
+    idx = (idx - 1) % 4
+  else: idx = (idx + 1) % 4
+  return idx
 
 def simulate():
-  x, y = 1, 1
+  x, y = 0, 0
   graph[x][y] = 2
-  direct = 0
-  index = 0
-  time = 0
-  q = [(x, y)]
+  direct_idx = 0
+  move_idx = 0
+  seconds = 0
+  snake = [(x, y)]
   while True:
-    nx = x + dx[direct]
-    ny = y + dy[direct]
-    if 1 <= nx <= n and 1 <= ny <= n and graph[nx][ny] != 2:
-      if graph[nx][ny] == 0:
-        graph[nx][ny] = 2
-        q.append((nx, ny))
-        px, py = q.pop(0)
-        graph[px][py] = 0
+    nx = x + dx[direct_idx]
+    ny = y + dy[direct_idx]
+    seconds += 1
+    if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] != 2:
       if graph[nx][ny] == 1:
         graph[nx][ny] = 2
-        q.append((nx, ny))
-    else:
-      time += 1
+        snake.append((nx, ny))
+      else:
+        graph[nx][ny] = 2
+        snake.append((nx, ny))
+        px, py = snake.pop(0)
+        graph[px][py] = 0
+    else: 
       break
     x, y = nx, ny
-    time += 1
-    if index < l and time == info[index][0]:
-      direct = turn(direct, info[index][1])
-      index += 1
-  return time
-print(simulate())
+    if move_idx < l and seconds == moves[move_idx][0]:
+      direct_idx = turn(direct_idx, moves[move_idx][1])
+      move_idx += 1
+  print(seconds)
+simulate()
