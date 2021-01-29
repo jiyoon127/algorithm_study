@@ -6,10 +6,10 @@ graph = [[i * 2 for i in range(21)]+[0]]
 piece = [[0, 0] for _ in range(4)]
 max_val = -int(1e9)
 
-graph.append([10 + (i * 3) for i in range(4)]+[25])
-graph.append([20 + (i * 2) for i in range(3)]+[25])
+graph.append([10, 13, 16, 19, 25])
+graph.append([20, 22, 24, 25])
 graph.append([30, 28, 27, 26, 25])
-graph.append([25 + (i * 5) for i in range(4)]+[0])
+graph.append([25, 30, 35, 40, 0])
 
 def simulate(diceIdx, score):
   global max_val
@@ -21,6 +21,7 @@ def simulate(diceIdx, score):
     x, y = piece[i][0], piece[i][1]
 
     if y == len(graph[x]) - 1: continue
+    if diceIdx == 9 and score + 40 <= max_val: continue
     nx, ny = x, y + dice[diceIdx]
     if x == 0:
       if ny == 5: nx, ny = 1, 0
@@ -36,8 +37,8 @@ def simulate(diceIdx, score):
     if ny >= len(graph[nx]):
       ny = len(graph[nx]) - 1
 
-    if graph[nx][ny] != 0:
-      if [nx, ny] in piece: continue
+    if graph[nx][ny] != 0 and [nx, ny] in piece:
+      continue
     
     piece[i] = [nx, ny]
     score += graph[nx][ny]
