@@ -22,7 +22,7 @@ def checkLoad(road):
                 if road[i + j] != right_h or i + j in ramps: return
             ramps.append(i + j)
             left_h = right_h
-
+            
     roads += 1
 
 def turnGraph(graph):
@@ -35,8 +35,8 @@ def turnGraph(graph):
 
 n, l = map(int, input().split())
 graph = [list(map(int, input().split())) for _ in range(n)]
-
 roads = 0
+
 for t in range(2):
     for i in range(n):
         row = graph[i]
