@@ -10,4 +10,4 @@
 + 이진탐색 | Binary Search
 + 동적계획 | Dynamic Programming
 + 최단경로 | Shortest Path
-+ 그래프 | Graph (union-find, spanning tree, topology sort)
++ 그래프 | Graph (union-find, kruskal, prim, topology sort)
