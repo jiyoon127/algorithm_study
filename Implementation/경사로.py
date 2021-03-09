@@ -37,20 +37,14 @@ n, l = map(int, input().split())
 graph = [list(map(int, input().split())) for _ in range(n)]
 
 roads = 0
-for i in range(n):
-    row = graph[i]
-    if row.count(row[0]) == n:
-        roads += 1
-        continue
-    else: checkLoad(row)
+for t in range(2):
+    for i in range(n):
+        row = graph[i]
+        if row.count(row[0]) == n:
+            roads += 1
+            continue
+        else: checkLoad(row)
 
-graph = turnGraph(graph)
-
-for i in range(n):
-    row = graph[i]
-    if row.count(row[0]) == n:
-        roads += 1
-        continue
-    else: checkLoad(row)
+    if t == 0: graph = turnGraph(graph)
 
 print(roads)
