@@ -1,55 +1,37 @@
 import sys
 input = sys.stdin.readline
-sys.setrecursionlimit(10000)
+
+def roll():
+    global x, y, dice_row, dice_column
+
+    for order in orders:
+        nx = x + dx[order]
+        ny = y + dy[order]
+        if not 0 <= nx < n or not 0 <= ny < m: continue
+        if order in (1, 2): # 가로 이동
+            if order == 1: dice_row = dice_row[-1:] + dice_row[:-1]
+            else: dice_row = dice_row[1:] + dice_row[:1]
+            dice_column[1], dice_column[-1] = dice_row[1], dice_row[-1]
+        else: # 세로 이동
+            if order == 3: dice_column = dice_column[1:] + dice_column[:1]
+            else: dice_column = dice_column[-1:] + dice_column[:-1]
+            dice_row[1], dice_row[-1] = dice_column[1], dice_column[-1]
+
+        if graph[nx][ny]:
+            dice_row[-1], dice_column[-1] = graph[nx][ny], graph[nx][ny]
+            graph[nx][ny] = 0
+        else:
+            graph[nx][ny] = dice_row[-1]
+
+        print(dice_row[1])
+        x, y = nx, ny
 
 n, m, x, y, k = map(int, input().split())
-graph = []
-dice_r = [0] * 4
-dice_c = [0] * 4
+graph = [list(map(int, input().split())) for _ in range(n)]
+orders = list(map(int, input().split()))
+dice_row = [0] * 4
+dice_column = [0] * 4
 dx = [0, 0, 0, -1, 1]
 dy = [0, 1, -1, 0, 0]
 
-for _ in range(n):
-  graph.append(list(map(int, input().split())))
-moves = list(map(int, input().split()))
-
-def moveDice(direct):
-  global dice_r, dice_c
-  if direct == 1:
-    dice_r = dice_r[-1:] + dice_r[:-1]
-    dice_c[1] = dice_r[1]
-    dice_c[3] = dice_r[3]
-  elif direct == 2:
-    dice_r = dice_r[1:] + dice_r[:1]
-    dice_c[1] = dice_r[1]
-    dice_c[3] = dice_r[3]
-  elif direct == 3:
-    dice_c = dice_c[1:] + dice_c[:1]
-    dice_r[1] = dice_c[1]
-    dice_r[3] = dice_c[3]
-  else:
-    dice_c = dice_c[-1:] + dice_c[:-1]
-    dice_r[1] = dice_c[1]
-    dice_r[3] = dice_c[3]
-
-def simulate(x, y, i):
-  global dice
-  if i == k: return
-
-  direct = moves[i]
-  nx = x + dx[direct]
-  ny = y + dy[direct]
-
-  if 0 <= nx < n and 0 <= ny < m:
-    moveDice(direct)
-    if graph[nx][ny] == 0:
-      graph[nx][ny] = dice_r[3]
-    else: 
-      dice_r[3] = graph[nx][ny]
-      dice_c[3] = graph[nx][ny]
-      graph[nx][ny] = 0
-    print(dice_r[1])
-    simulate(nx, ny, i+1)
-  else: simulate(x, y, i+1)
-
-simulate(x, y, 0)
+roll()
