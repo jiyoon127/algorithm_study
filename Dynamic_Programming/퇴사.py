@@ -2,16 +2,14 @@ import sys
 input = sys.stdin.readline
 
 n = int(input())
-schedule = []
-d = [0] * 16
-
-for _ in range(n):
-  schedule.append(list(map(int, input().split())))
+data = [list(map(int, input().split())) for _ in range(n)]
+dp = [0] * (n + 1)
 
 for i in reversed(range(n)):
-  time, pay = schedule[i][0], schedule[i][1]
-  if i + time > n:
-   d[i] = d[i+1]
-  else:
-    d[i] = max(d[i + 1], pay + d[i + time])
-print(d[0])
+    time, pay = data[i][0], data[i][1]
+    if i + time > n:
+        dp[i] = dp[i + 1]
+    else:
+        dp[i] = max(dp[i + 1], pay + dp[i + time])
+
+print(dp[0])
