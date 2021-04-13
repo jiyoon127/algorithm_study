@@ -54,34 +54,32 @@ print(max_val)
 import sys
 input = sys.stdin.readline
 
+def put(x, y, cnt, _sum):
+    global ans
+    if cnt == 4:
+        ans = max(ans, _sum)
+        return
+
+    if ans > max_map * (4 - cnt) + _sum: return
+    for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+        nx = x + dx
+        ny = y + dy
+        if 0 <= nx < n and 0 <= ny < m and not visited[nx][ny]:
+            visited[nx][ny] = 1
+            if cnt == 2: put(x, y, cnt + 1, _sum + graph[nx][ny])
+            put(nx, ny, cnt + 1, _sum + graph[nx][ny])
+            visited[nx][ny] = 0
+
 n, m = map(int, input().split())
 graph = [list(map(int, input().split())) for _ in range(n)]
+visited = [[0] * m for _ in range(n)]
 max_map = max(map(max, graph))
-max_val = -int(1e9)
-dx = [1, 0, -1, 0]
-dy = [0, 1, 0, -1]
-visited = [[False] * m for _ in range(n)]
-
-def dfs(x, y, dep, _sum):
-    global max_val
-    if dep == 4:
-        max_val = max(max_val, _sum)
-        return
-    if max_val > _sum + max_map * (4 - dep): return
-    for i in range(4):
-        nx = x + dx[i]
-        ny = y + dy[i]
-        if 0 <= nx < n and 0 <= ny < m and not visited[nx][ny]:
-            visited[nx][ny] = True
-            if dep == 2:
-                dfs(x, y, dep + 1, _sum + graph[nx][ny])
-            dfs(nx, ny, dep + 1, _sum + graph[nx][ny])
-            visited[nx][ny] = False
+ans = 0
 
 for i in range(n):
     for j in range(m):
-        visited[i][j] = True
-        dfs(i, j, 1, graph[i][j])
-        visited[i][j] = False
+        visited[i][j] = 1
+        put(i, j, 1, graph[i][j])
+        visited[i][j] = 0
 
-print(max_val)
+print(ans)
