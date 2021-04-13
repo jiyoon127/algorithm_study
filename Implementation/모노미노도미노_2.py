@@ -33,7 +33,7 @@ def move(t, graph, column):
             graph.pop(x)
             point += 1
 
-    if not graph: graph.append([0, 0, 0, 0]) # !important 포인트 처리 후 빈 배열이 되면 다시 [[0, 0, 0, 0]]으로 초기화 해줘야!
+    if not graph: graph.append([0, 0, 0, 0])
 
     while len(graph) > 4:
         graph.pop(0)
@@ -47,9 +47,9 @@ point = 0
 for step in steps:
     t, x, y = step
     move(t, green, y)
-    if t == 1: move(t, blue, 3 - x)
-    elif t == 2: move(3, blue, 3 - x)
-    else: move(2, blue, 2 - x)
+    if t == 1: move(t, blue, x)
+    elif t == 2: move(3, blue, x)
+    else: move(2, blue, x)
 
 print(point)
 print(sum(map(sum, green)) + sum(map(sum, blue)))
