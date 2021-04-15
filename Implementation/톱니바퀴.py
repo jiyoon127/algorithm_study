@@ -1,34 +1,34 @@
-from collections import deque
 import sys
 input = sys.stdin.readline
 
-def turn(target, direct):
-  if direct == -1:
-    wheels[target-1].append(wheels[target-1].popleft())
-  else:
-    wheels[target-1].appendleft(wheels[target-1].pop())
+def turn(n, d):
+    if d == -1: # 반시계
+        wheels[n] = wheels[n][1:] + wheels[n][:1]
+    else: # 시계
+        wheels[n] = wheels[n][-1:] + wheels[n][:-1]
 
-def turn_nei(target, direct, nei):
-  if nei > 4 or nei < 1: return
-  if target < nei and wheels[target - 1][2] != wheels[nei - 1][6]:
-    turn_nei(nei, -direct, nei + 1)
-    turn(nei, direct)
-  if target > nei and wheels[target - 1][6] != wheels[nei - 1][2]:
-    turn_nei(nei, -direct, nei - 1)
-    turn(nei, direct)
+def turn_nei(n, d, nei):
+    if not 0 <= nei <= 3: return
+    if n < nei and wheels[n][2] != wheels[nei][6]:
+        turn_nei(nei, -d, nei + 1)
+        turn(nei, d)
+    elif n > nei and wheels[n][6] != wheels[nei][2]:
+        turn_nei(nei, -d, nei - 1)
+        turn(nei, d)
 
-wheels = []
-for _ in range(4):
-  wheels.append(deque(map(int,input().rstrip())))
 
-k = int(input())
-for i in range(k):
-  target, direct = map(int, input().split())
-  turn_nei(target, -direct, target + 1)
-  turn_nei(target, -direct, target - 1) 
-  turn(target, direct)
-
+wheels = [list(map(int, input().rstrip())) for _ in range(4)]
 ans = 0
+
+for _ in range(int(input())):
+    n, d = map(int, input().split())
+    n -= 1
+
+    turn_nei(n, -d, n + 1)
+    turn_nei(n, -d, n - 1)
+    turn(n, d)
+
 for i in range(4):
-  ans += wheels[i][0] * (2**i)
+    if wheels[i][0]: ans += pow(2, i)
+
 print(ans)
