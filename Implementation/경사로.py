@@ -1,50 +1,62 @@
 import sys
 input = sys.stdin.readline
 
-def checkLoad(road):
-    global roads
-    new_road = road.copy()
-    ramps = []
-    left_h = road[0]
-    for i in range(1, n):
-        right_h = road[i]
-        if abs(right_h - left_h) > 1: return
-        elif left_h < right_h:
-            if not 0 <= i - l < n: return
-            for j in range(1, l + 1):
-                if road[i - j] != left_h or i - j in ramps: return
-            ramps.append(i - j)
-            left_h = right_h
-
-        elif left_h > right_h:
-            if not 0 <= i + l - 1 < n: return
-            for j in range(0, l):
-                if road[i + j] != right_h or i + j in ramps: return
-            ramps.append(i + j)
-            left_h = right_h
-            
-    roads += 1
-
-def turnGraph(graph):
-    new_graph = [[0] * n for _ in range(n)]
+def turn():
+    new_board = [[0] * n for _ in range(n)]
     for i in range(n):
         for j in range(n):
-            new_graph[j][n - 1 - i] = graph[i][j]
+            new_board[i][j] = board[j][i]
+    return new_board
 
-    return new_graph
+def findAvailable(board):
+    global ans
+
+    for row in board:
+        prev_i, cur_i = 0, 1
+        lamp = [False] * n
+        is_possible = True
+        while cur_i < n:
+            if row[cur_i] == row[prev_i]: # 같은 높이
+                prev_i += 1
+                cur_i += 1
+                continue
+            elif abs(row[cur_i] - row[prev_i]) > 1:
+                is_possible = False
+                break # 높이 2 이상 차이
+
+            if row[cur_i] > row[prev_i] and cur_i - l >= 0: # 오른쪽이 높을 경우
+                for i in range(cur_i - l, cur_i):
+                    if row[i] != row[prev_i] or lamp[i]:
+                        is_possible = False
+                        break
+                    else: lamp[i] = True
+                prev_i = cur_i
+                cur_i += 1
+
+            elif row[cur_i] < row[prev_i] and prev_i + l < n: # 왼쪽이 높을 경우
+                for i in range(prev_i + 1, prev_i + l + 1):
+                    if row[i] != row[cur_i] or lamp[i]:
+                        is_possible = False
+                        break
+                    else: lamp[i] = True
+
+                prev_i += l
+                cur_i = prev_i + 1
+
+            else: is_possible = False
+
+            if not is_possible:
+                break # 못 놓을 경우 다음줄 탐색
+
+        if is_possible: ans += 1
 
 n, l = map(int, input().split())
-graph = [list(map(int, input().split())) for _ in range(n)]
-roads = 0
+board = [list(map(int, input().split())) for _ in range(n)]
+ans = 0
 
-for t in range(2):
-    for i in range(n):
-        row = graph[i]
-        if row.count(row[0]) == n:
-            roads += 1
-            continue
-        else: checkLoad(row)
+for cnt in range(2):
+    findAvailable(board)
+    if not cnt:
+        board = turn()
 
-    if t == 0: graph = turnGraph(graph)
-
-print(roads)
+print(ans)
