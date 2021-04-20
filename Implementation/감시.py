@@ -1,17 +1,17 @@
 import sys
 input = sys.stdin.readline
 
-def dfs(cur, graph):
-    global result
-    if cur == len(cams):
+def turnCctv(cur, graph):
+    global _min
+    if cur == len(cctvs):
         cnt = 0
         for row in graph:
             cnt += row.count(0)
-        result = min(result, cnt)
+        _min = min(_min, cnt)
         return
 
-    type, (x, y) = cams[cur]
-    for direct in turns[type]:
+    _type, x, y = cctvs[cur]
+    for direct in directions[_type]:
         new_graph = [[0] * m for _ in range(n)]
         for i in range(n):
             for j in range(m):
@@ -23,33 +23,31 @@ def dfs(cur, graph):
 
             while 0 <= nx < n and 0 <= ny < m:
                 if new_graph[nx][ny] == 6: break
-                if not new_graph[nx][ny]:
-                    new_graph[nx][ny] = "#"
-
+                if not new_graph[nx][ny]: new_graph[nx][ny] = "#"
                 nx += dx[i]
                 ny += dy[i]
-
-        dfs(cur + 1, new_graph)
+        turnCctv(cur + 1, new_graph)
 
 n, m = map(int, input().split())
 graph = []
-cams = []
+cctvs = []
+directions = [[0],
+         [[0], [1], [2], [3]],
+         [[0, 2], [1, 3]],
+         [[0, 1], [1, 2], [2, 3], [3, 0]],
+         [[0, 1, 2], [1, 2, 3], [2, 3, 0], [3, 0, 1]],
+         [[0, 1, 2, 3]]
+         ]
 dx = [-1, 0, 1, 0]
 dy = [0, 1, 0, -1]
-turns = [0,
-    [[0], [1], [2], [3]],
-    [[0, 2], [1, 3]], [[0, 1], [1, 2], [2, 3], [3, 0]],
-    [[0, 1, 2], [1, 2, 3], [2, 3, 0], [3, 0, 1]],
-    [[0, 1, 2, 3]]
-]
-result = int(1e9)
+_min = n * m
 
 for i in range(n):
     row = list(map(int, input().split()))
     graph.append(row)
-    for j, cam in enumerate(row):
-        if cam not in (0, 6): cams.append((cam, (i, j)))
+    for j, cctv in enumerate(row):
+        if cctv not in (0, 6): cctvs.append((cctv, i, j))
 
-dfs(0, graph)
+turnCctv(0, graph)
 
-print(result)
+print(_min)
