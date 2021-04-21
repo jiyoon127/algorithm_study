@@ -3,41 +3,46 @@
 import sys
 input = sys.stdin.readline
 
-
-def followLine():
-    for line in range(1, n + 1):
-        cur = line
-        for i in range(1, h + 1):
-            if graph[i][cur]: cur += 1
-            elif cur > 1 and graph[i][cur - 1]: cur -= 1
-        if cur != line: return False
+def check():
+    for col in range(n):
+        row = 0
+        cur = (row, col)
+        while cur[0] < h:
+            if graph[cur[0]][cur[1]]:
+                cur = (cur[0], cur[1] + 1)
+            elif cur[1] > 0 and graph[cur[0]][cur[1] - 1]:
+                cur = (cur[0], cur[1] - 1)
+            cur = (cur[0] + 1, cur[1])
+        if cur[1] != col: return False
 
     return True
 
-def addLine(cnt, x, y):
-    global result
-    if followLine():
-        result = min(result, cnt)
+def putLine(cnt, x, y):
+    global _min
+    if check():
+        _min = min(_min, cnt)
         return
-    elif cnt == 3 or result <= cnt: return
 
-    for i in range(x, h+1):
-        k = y if i == x else 1
-        for j in range(k, n):
+    elif cnt == 3 or _min <= cnt: return
+
+    for i in range(x, h):
+        tmp = y if i == x else 0
+        for j in range(tmp, n - 1):
             if not graph[i][j] and not graph[i][j + 1]:
                 graph[i][j] = 1
-                addLine(cnt + 1, i, j + 2)
-                graph[i][j] = False
+                putLine(cnt + 1, i, j + 2)
+                graph[i][j] = 0
 
 n, m, h = map(int, input().split())
-graph = [[False] * (n + 1) for _ in range(h + 1)]
-INF = int(1e9)
-result = INF
+graph = [[0] * n for _ in range(h)]
+_min = 4
 
 for _ in range(m):
     a, b = map(int, input().split())
+    a -= 1
+    b -= 1
     graph[a][b] = 1
 
-addLine(0, 1, 1)
+putLine(0, 0, 0)
 
-print(result if result != INF else -1)
+print(_min if _min <= 3 else -1)
