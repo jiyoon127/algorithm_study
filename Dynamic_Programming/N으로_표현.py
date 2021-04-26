@@ -1,11 +1,9 @@
 def solution(N, number):
     answer = -1
-    dp = []
-    dp.append(set([0]))
-    dp.append(set([N]))
-
+    dp = [set([0]), set([N])]
+    
     if N == 1 or N == number: return N % number + 1
-
+    
     for i in range(2, 9):
         case = set()
         case.add(int(str(N) * i))
@@ -13,14 +11,14 @@ def solution(N, number):
             for x in dp[j]:
                 for y in dp[i - j]:
                     case.add(x + y)
-                    case.add(x - y)
-                    case.add(y - x)
+                    case.add(abs(x - y))
                     case.add(x * y)
                     if x: case.add(y // x)
                     if y: case.add(x // y)
-        if number in case:
-            answer = i
-            break
+        
+        if number in case: 
+            return i
+        
         dp.append(case)
         
     return answer
