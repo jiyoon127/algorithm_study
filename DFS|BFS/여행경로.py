@@ -1,34 +1,19 @@
-answer = []
-
-def dfs(ticket, tickets, visited, path):
-    global answer
-    
-    fr, to = ticket
-    
-    if len(path) == len(tickets) + 1: 
-        cur = list(to for fr, to in path)
-        if answer:
-            for ans, _new in zip(answer, cur):
-                if ans < _new: break
-                elif ans > _new:
-                    answer = cur
-                    break
-            
-        else: answer = cur
-        return
-    
-    for i, ticket in enumerate(tickets):
-        if to == ticket[0] and not visited[i]:
-            visited[i] = 1
-            path.append(ticket)
-            dfs(ticket, tickets, visited, path)
-            path.pop()
-            visited[i] = 0
-    
-
 def solution(tickets):
-    visited = [0] * len(tickets)
+    routes = {}
+
+    for fr, to in tickets:
+        routes[fr] = routes.get(fr, []) + [to]  
+
+    for r in routes:
+        routes[r].sort(reverse = True)
+
+    stack = ["ICN"]
+    path = []
     
-    dfs(["", "ICN"], tickets, visited, [["", "ICN"]])
-    
-    return answer
+    while stack:
+        cur = stack[-1]
+
+        if cur in routes and routes[cur]: stack.append(routes[cur].pop())
+        else: path.append(stack.pop())
+        print(stack)
+    return path[:: -1]
