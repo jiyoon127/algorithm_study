@@ -1,46 +1,43 @@
 import sys
-
 input = sys.stdin.readline
 
+def choose_chicken(cnt):
+    global _min
+    if cnt == m:
+        cur_city_dist = 0
+        for hx, hy in houses:
+            cur_min = int(1e9)
+            for cx, cy in tmp_choice:
+                cur_min = min(cur_min, abs(hx - cx) + abs(hy - cy))
+            cur_city_dist += cur_min
+
+        _min = min(_min, cur_city_dist)
+        return
+
+    for i, chicken in enumerate(chickens):
+        if visited[i]: continue
+        visited[i] = 1
+        tmp_choice.append(chicken)
+        choose_chicken(cnt + 1)
+        tmp_choice.pop()
+        for j in range(i + 1, len(chickens)):
+            visited[j] = 0
+
+n, m = map(int, input().split())
 graph = []
 chickens = []
 houses = []
-n, m = map(int, input().split())
-ans = int(1e9)
+tmp_choice = []
+_min = int(1e9)
 
 for i in range(n):
     row = list(map(int, input().split()))
-    graph.append(row)
-    for j in range(n):
-        if row[j] == 2: chickens.append((i, j))
+    for j in range(len(row)):
         if row[j] == 1: houses.append((i, j))
+        elif row[j] == 2: chickens.append((i, j))
 
-visited = [False] * len(chickens)
-data = []
+visited = [0] * len(chickens)
 
-def chick_dist(candidates):
-    dist = 0
-    for hx, hy in houses:
-        temp = int(1e9)
-        for cx, cy in candidates:
-            temp = min(temp, abs(hx - cx) + abs(hy - cy))
-        dist += temp
-    return dist
+choose_chicken(0)
 
-def simulate():
-    global ans
-    if len(data) == m:
-        ans = min(ans, chick_dist(data))
-        return
-
-    for i in range(len(chickens)):
-        if visited[i]: continue
-        visited[i] = True
-        data.append(chickens[i])
-        simulate()
-        data.pop()
-        for j in range(i+1, len(chickens)):
-            visited[j] = False
-
-simulate()
-print(ans)
+print(_min)
