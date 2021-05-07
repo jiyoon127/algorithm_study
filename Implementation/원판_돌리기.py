@@ -1,69 +1,57 @@
-from collections import deque
 import sys
-sys.setrecursionlimit(10000)
+from collections import deque
 input = sys.stdin.readline
 
-data = deque([0])
-turn_info = []
-ans = 0
-cnt = 0
-n, m, t = map(int, input().split())
-tot_cnt = n * m
+def turn(x, d, k):
+    global cur_remain
 
-for _ in range(n):
-  data.append(deque(map(int, input().split())))
+    for target in range(x, n + 1, x):
+        if d == 0:
+            graph[target - 1] = graph[target - 1][-k:] + graph[target - 1][:-k]
+        else:
+            graph[target - 1] = graph[target - 1][k:] + graph[target - 1][:k]
+
+    is_removed = False
+
+    visited = [[0] * m for _ in range(n)]
+    for i in range(n):
+        for j in range(m):
+            if not graph[i][j]: continue
+            cur_removed = False
+            q = deque([(i, j)])
+
+            while q:
+                x, y = q.popleft()
+                for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                    nx = x + dx
+                    ny = (y + dy) % m
+                    if 0 <= nx < n and not visited[nx][ny] and graph[nx][ny] == graph[i][j] and (nx, ny) != (i, j):
+                        visited[nx][ny] = 1
+                        is_removed, cur_removed = True, True
+                        cur_remain -= 1
+                        graph[nx][ny] = 0
+                        q.append((nx, ny))
+
+            if cur_removed:
+                graph[i][j] = 0
+                cur_remain -= 1
+                visited[i][j] = 1
+
+    if not is_removed:
+        if not cur_remain: return
+        avg = sum(map(sum, graph)) / cur_remain
+        for i in range(n):
+            for j in range(m):
+                if graph[i][j]:
+                    if graph[i][j] < avg: graph[i][j] += 1
+                    elif graph[i][j] > avg: graph[i][j] -= 1
+
+n, m, t = map(int, input().split())
+graph = [list(map(int, input().split())) for _ in range(n)]
+cur_remain = m * n
 
 for _ in range(t):
-  turn_info.append(list(map(int, input().split())))
+    x, d, k = map(int, input().split())
+    turn(x, d, k)
 
-dx = [1, 0, -1, 0]
-dy = [0 ,1, 0, -1]
-
-def turn(x, d, k):
-  for i in range(x, n+1, x):
-    if d == 0:
-      data[i].rotate(k)
-    else:
-      data[i].rotate(-k)
-
-def erase(x, y, target):
-  global cnt
-  for i in range(4):
-    nx = (x + dx[i])
-    ny = (y + dy[i]) % m
-    if 1 <= nx <= n and 0 <= ny < m and data[nx][ny] == target:
-      cnt += 1
-      data[nx][ny] = 0
-      erase(nx, ny, target)
-
-for i in range(1, n+1):
-  for j in range(m):
-    ans += data[i][j]
-
-for (x, d, k) in turn_info:
-  flag = True
-  turn(x, d, k)
-
-  for i in range(1, n+1):
-    for j in range(m):
-      if data[i][j]:
-        cnt = 0
-        target = data[i][j]
-        erase(i, j, target)
-        if cnt != 0: flag = False
-        ans -= (cnt * target)
-        tot_cnt -= cnt
-
-  if ans == 0: break
-  if flag:
-    avg = ans / tot_cnt
-    for i in range(1, n+1):
-      for j in range(m):
-        if data[i][j] and data[i][j] > avg:
-          data[i][j] -= 1
-          ans -= 1
-        elif data[i][j] and data[i][j] < avg:
-          data[i][j] += 1
-          ans += 1
-
-print(ans)
+print(sum(map(sum, graph)))
